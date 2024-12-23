@@ -39,6 +39,7 @@
       <EnvParamsTab v-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_PARAM" />
       <HttpTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_HTTP" />
       <DataBaseTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_DATABASE" />
+      <SSLTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_SSL" />
       <HostTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_HOST" ref="hostTabRef" />
       <div
         v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_PRE || activeKey === EnvTabTypeEnum.ENVIRONMENT_POST"
@@ -162,6 +163,12 @@
     {
       value: EnvTabTypeEnum.ENVIRONMENT_DATABASE,
       label: t('project.environmental.database'),
+      canHide: true,
+      isShow: true,
+    },
+    {
+      value: EnvTabTypeEnum.ENVIRONMENT_SSL,
+      label: t('证书配置'),
       canHide: true,
       isShow: true,
     },
