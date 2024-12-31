@@ -5,6 +5,7 @@ import io.metersphere.project.dto.environment.datasource.DataSource;
 import io.metersphere.project.dto.environment.host.HostConfig;
 import io.metersphere.project.dto.environment.http.HttpConfig;
 import io.metersphere.project.dto.environment.processors.EnvProcessorConfig;
+import io.metersphere.project.dto.environment.ssl.KeyStoreConfig;
 import io.metersphere.project.dto.environment.variables.CommonVariables;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -24,6 +25,10 @@ public class EnvironmentConfig {
     private List<HttpConfig> httpConfig = new ArrayList<>(0);
     @Schema(description = "数据库配置")
     private List<DataSource> dataSources = new ArrayList<>(0);
+
+    @Schema(description = "证书配置")
+    private KeyStoreConfig keyStoreConfig =new KeyStoreConfig();
+
 
     @Schema(description = "Host配置")
     private HostConfig hostConfig = new HostConfig();

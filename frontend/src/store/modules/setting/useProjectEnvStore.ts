@@ -12,6 +12,8 @@ import {
   EnvConfig,
   EnvDetailItem,
   GlobalParams,
+  KeyStoreEntry,
+  KeyStoreFile,
 } from '@/models/projectManagement/environmental';
 
 export const ALL_PARAM = 'allParam';
@@ -23,6 +25,10 @@ const envParamsDefaultConfig: EnvConfig = {
   commonVariables: [],
   httpConfig: [],
   dataSources: [],
+  keyStoreConfig: {
+    entry: [],
+    files: [],
+  },
   hostConfig: {
     enable: false,
     hosts: [],

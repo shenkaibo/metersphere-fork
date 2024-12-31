@@ -5,6 +5,7 @@ export const getEntryEnvUrl = '/project/environment/get/entry';
 export const exportEnvUrl = '/project/environment/export';
 export const editPosEnvUrl = '/project/environment/edit/pos';
 export const validateDatabaseEnvUrl = '/project/environment/database/validate';
+export const getSslEntryUrl = '/project/environment/sslconfig/get/entry';
 export const addEnvUrl = '/project/environment/add';
 export const detailEnvUrl = '/project/environment/get/';
 export const deleteEnvUrl = '/project/environment/delete/';

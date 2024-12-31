@@ -19,6 +19,7 @@ export enum UploadAcceptEnum {
   jmx = '.jmx',
   har = '.har',
   ms = '.ms',
+  cert = '.p12,.jks,.pfx',
 }
 
 export enum UploadStatus {

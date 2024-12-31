@@ -5,18 +5,20 @@ import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
 public class KeyStoreConfig {
     @Schema(description = "证书条目")
-    private List<KeyStoreEntry> entry;
+    private List<KeyStoreEntry> entry=new ArrayList<>();
     @Schema(description = "证书文件")
-    private List<KeyStoreFile> files;
+    private List<KeyStoreFile> files=new ArrayList<>();
 
     public String getDefaultAlias() {
         if (CollectionUtils.isNotEmpty(entry)) {
+            //获取第一条默认条目
             List<KeyStoreEntry> entryList = this.entry.stream().filter(KeyStoreEntry::isDefault).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(entryList)) {
                 if (StringUtils.isNotEmpty(entryList.getFirst().getNewAsName())) {
@@ -24,7 +26,12 @@ public class KeyStoreConfig {
                 } else {
                     return entryList.getFirst().getOriginalAsName();
                 }
+
+            }else{
+                //返回第一个条目
+                return entry.getFirst().getOriginalAsName();
             }
+
         }
         return null;
     }

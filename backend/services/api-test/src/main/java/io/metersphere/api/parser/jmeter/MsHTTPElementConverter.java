@@ -23,11 +23,19 @@ import io.metersphere.project.dto.environment.host.Host;
 import io.metersphere.project.dto.environment.http.HttpConfig;
 import io.metersphere.project.dto.environment.http.HttpConfigPathMatchRule;
 import io.metersphere.project.dto.environment.http.SelectModule;
+import io.metersphere.project.dto.environment.ssl.KeyStoreConfig;
+import io.metersphere.project.dto.environment.ssl.KeyStoreFile;
+import io.metersphere.project.dto.environment.ssl.MsKeyStore;
+import io.metersphere.project.service.CommandService;
+import io.metersphere.sdk.constants.LocalRepositoryDir;
+import io.metersphere.sdk.util.CommonBeanFactory;
 import io.metersphere.sdk.util.EnumValidator;
 import io.metersphere.sdk.util.LogUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.config.KeystoreConfig;
 import org.apache.jmeter.protocol.http.control.AuthManager;
 import org.apache.jmeter.protocol.http.control.Authorization;
 import org.apache.jmeter.protocol.http.control.DNSCacheManager;
@@ -76,6 +84,9 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
         sampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName());
         sampler.setProperty(TestElement.GUI_CLASS, SaveService.aliasToClass(HTTP_TEST_SAMPLE_GUI));
 
+
+
+
         setStepIdentification(msHTTPElement, config, sampler);
 
         sampler.setMethod(msHTTPElement.getMethod());
@@ -88,6 +99,14 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
         handleBody(sampler, msHTTPElement, config);
 
         HashTree httpTree = tree.add(sampler);
+
+        //设置证书
+        String keystoreId = msHTTPElement.getResourceId();
+        keystoreId = StringUtils.isNotBlank(config.getReportId()) ? config.getReportId() + "_" + keystoreId : keystoreId;
+        LogUtils.info("设置SSL证书配置{}", keystoreId);
+        sampler.setProperty("MS-KEYSTORE-ID", keystoreId);
+        addCertificate(envConfig,httpTree, keystoreId, msHTTPElement);
+
 
         // 处理请求头
         HeaderManager httpHeader = getHttpHeader(msHTTPElement, apiParamConfig, httpConfig);
@@ -107,6 +126,72 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
         Optional.ofNullable(authManager).ifPresent(httpTree::add);
 
         parseChild(httpTree, msHTTPElement, config);
+    }
+
+    private void addArguments(HashTree tree, String key, String value) {
+        Arguments arguments = new Arguments();
+        arguments.setEnabled(true);
+        arguments.setName("User Defined KeyStoreAlias");
+        arguments.setProperty(TestElement.TEST_CLASS, Arguments.class.getName());
+        arguments.setProperty(TestElement.GUI_CLASS, SaveService.aliasToClass("ArgumentsPanel"));
+        arguments.addArgument(key, value, "=");
+        tree.add(arguments);
+    }
+    /**
+     * 加载SSL认证
+     */
+    private void addCertificate(EnvironmentInfoDTO envConfig, HashTree httpSamplerTree, String resourceId,MsHTTPElement msHTTPElement) {
+        if (envConfig != null &&  envConfig.getConfig().getKeyStoreConfig() != null) {
+            KeyStoreConfig sslConfig = envConfig.getConfig().getKeyStoreConfig();
+            List<KeyStoreFile> files = sslConfig.getFiles();
+            if (CollectionUtils.isNotEmpty(files)) {
+                MsKeyStore msKeyStore =  new MsKeyStore();
+                CommandService commandService = CommonBeanFactory.getBean(CommandService.class);
+                //if (msKeyStore == null) {
+                  //  msKeyStore = new MsKeyStore();
+                    if (files.size() == 1) {
+                        // 加载认证文件
+                        KeyStoreFile file = files.get(0);
+                        //
+                        msKeyStore.setPath(LocalRepositoryDir.getSystemCacheDir() + "/" + envConfig.getId() + "/" + file.getName());
+                        msKeyStore.setPassword(file.getPassword());
+                    } else {
+                        // 合并多个认证文件,
+                        /*
+                        msKeyStore.setPath(FileUtils.BODY_FILE_DIR + "/ssl/tmp." + this.getId() + ".jks");
+                        msKeyStore.setPassword("ms123...");
+                        commandService.mergeKeyStore(msKeyStore.getPath(), sslConfig);
+                        }
+                         */
+                    }
+              //  }
+               // if (StringUtils.isEmpty(this.alias)) {
+                    String alias = sslConfig.getDefaultAlias();
+//                } else {
+//                    this.alias = sslConfig.getAlias(this.alias);
+//                }
+                if (StringUtils.isNotEmpty(alias)) {
+                    String aliasVar = "User-Defined-KeyStore-" + alias;
+                    this.addArguments(httpSamplerTree, aliasVar, alias);
+                    // 校验 keystore
+                    //commandService.checkKeyStore(msKeyStore.getPassword(), msKeyStore.getPath());
+                    KeystoreConfig keystoreConfig = new KeystoreConfig();
+                    keystoreConfig.setEnabled(true);
+                    keystoreConfig.setName(StringUtils.isNotEmpty(msHTTPElement.getName()) ? msHTTPElement.getName() + "-KeyStore" : "KeyStore");
+                    keystoreConfig.setProperty(TestElement.TEST_CLASS, KeystoreConfig.class.getName());
+                    keystoreConfig.setProperty(TestElement.GUI_CLASS, SaveService.aliasToClass("TestBeanGUI"));
+                    keystoreConfig.setProperty("clientCertAliasVarName", aliasVar);
+                    keystoreConfig.setProperty("endIndex", -1);
+                    keystoreConfig.setProperty("preload", true);
+                    keystoreConfig.setProperty("startIndex", 0);
+                    keystoreConfig.setProperty("MS-KEYSTORE-FILE-PATH", msKeyStore.getPath());
+                    keystoreConfig.setProperty("MS-KEYSTORE-FILE-PASSWORD", msKeyStore.getPassword());
+                    keystoreConfig.setProperty("MS-KEYSTORE-ID", resourceId);
+                    httpSamplerTree.add(keystoreConfig);
+                    //config.getKeyStoreMap().put(this.getProjectId(), new MsKeyStore(msKeyStore.getPath(), msKeyStore.getPassword()));
+                }
+            }
+        }
     }
 
     /**
@@ -501,4 +586,6 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
 
         return dnsCacheManager;
     }
+
+
 }

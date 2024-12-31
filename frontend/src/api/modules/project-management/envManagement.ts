@@ -1,7 +1,6 @@
-import { FileItem } from '@arco-design/web-vue';
-
 import MSR from '@/api/http/index';
 import * as envURL from '@/api/requrls/project-management/envManagement';
+import { getEntryEnvUrl } from '@/api/requrls/project-management/envManagement';
 
 import type {
   DragParam,
@@ -10,11 +9,14 @@ import type {
   EnvPluginListItem,
   GlobalParams,
   GroupItem,
+  KeyStoreEntry,
   ProjectOptionItem,
 } from '@/models/projectManagement/environmental';
 import { OptionsItem } from '@/models/setting/log';
 
-export function updateOrAddEnv(data: { request: EnvDetailItem; fileList: FileItem[] }) {
+import { Result } from '#/axios';
+
+export function updateOrAddEnv(data: { request: EnvDetailItem; fileList: File[] }) {
   return MSR.uploadFile<EnvDetailItem>(
     { url: data.request.id ? envURL.updateEnvUrl : envURL.addEnvUrl },
     data,
@@ -27,6 +29,10 @@ export function listEnv(data: { projectId: string; keyword: string }) {
 }
 export function importEnv(data: { request: any; fileList: File[] }) {
   return MSR.uploadFile({ url: envURL.importEnvUrl }, data, '', false);
+}
+
+export function getSslEntry(data: object) {
+  return MSR.uploadFile<Result<KeyStoreEntry[]>>({ url: envURL.getEntryEnvUrl }, data);
 }
 export function getEntryEnv(data: EnvListItem) {
   return MSR.post<EnvListItem>({ url: envURL.getEntryEnvUrl, data });

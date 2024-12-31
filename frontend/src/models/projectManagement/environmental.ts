@@ -2,6 +2,8 @@ import { EnableKeyValueParam, ExecuteConditionProcessor } from '@/models/apiTest
 import type { SelectedModule } from '@/models/apiTest/management';
 import { RequestAuthType } from '@/enums/apiEnum';
 
+import { FileItem } from '@arco-design/web-vue/es/upload/interfaces';
+
 export interface EnvListItem {
   mock?: boolean;
   name: string;
@@ -29,6 +31,30 @@ export interface DataSourceItem {
   password: string; // 密码
   poolMax?: number; // 最大连接数
   timeout?: number; // 超时时间
+}
+
+export interface KeyStoreEntry {
+  id: string;
+  originalAsName: string | undefined;
+  newAsName: string;
+  type: string | undefined;
+  password: string;
+  sourceName: string | undefined;
+  updateTime: number;
+  sourceId: string;
+  isDefault: boolean;
+}
+export interface KeyStoreFile {
+  id: string;
+  name: string | undefined;
+  type: string | undefined;
+  updateTime: number;
+  password: string;
+  file?: File | undefined;
+}
+export interface EnvSSLConfig {
+  entry: KeyStoreEntry[];
+  files: KeyStoreFile[];
 }
 
 export interface EnvConfigItem {
@@ -60,6 +86,7 @@ export interface EnvConfig {
   httpConfig: EnvConfigItem[];
   dataSources: DataSourceItem[];
   hostConfig: EnvConfigItem;
+  keyStoreConfig: EnvSSLConfig;
   // TODO  数据参数有问题
   preProcessorConfig: ProcessorConfig;
   postProcessorConfig: ProcessorConfig;

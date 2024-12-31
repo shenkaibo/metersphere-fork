@@ -68,7 +68,7 @@ public class EnvironmentController {
     @RequiresPermissions(PermissionConstants.PROJECT_ENVIRONMENT_READ_ADD)
     @Log(type = OperationLogType.ADD, expression = "#msClass.addLog(#request)", msClass = EnvironmentLogService.class)
     public Environment add(@Validated({Created.class}) @RequestPart(value = "request") EnvironmentRequest request,
-                           @RequestPart(value = "file", required = false) List<MultipartFile> sslFiles) {
+                           @RequestPart(value = "files", required = false) List<MultipartFile> sslFiles) {
         return environmentService.add(request, SessionUtils.getUserId(), sslFiles);
     }
 
@@ -78,7 +78,7 @@ public class EnvironmentController {
     @Log(type = OperationLogType.UPDATE, expression = "#msClass.updateLog(#request)", msClass = EnvironmentLogService.class)
     @CheckOwner(resourceId = "#request.id", resourceType = "environment")
     public Environment update(@Validated({Updated.class}) @RequestPart("request") EnvironmentRequest request,
-                              @RequestPart(value = "file", required = false) List<MultipartFile> sslFiles) {
+                              @RequestPart(value = "files", required = false) List<MultipartFile> sslFiles) {
         return environmentService.update(request, SessionUtils.getUserId(), sslFiles);
     }
 

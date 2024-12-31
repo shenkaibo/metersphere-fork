@@ -39,7 +39,7 @@
       <EnvParamsTab v-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_PARAM" />
       <HttpTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_HTTP" />
       <DataBaseTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_DATABASE" />
-      <SSLTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_SSL" />
+      <SslTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_SSL" />
       <HostTab v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_HOST" ref="hostTabRef" />
       <div
         v-else-if="activeKey === EnvTabTypeEnum.ENVIRONMENT_PRE || activeKey === EnvTabTypeEnum.ENVIRONMENT_POST"
@@ -83,6 +83,7 @@
   import HttpTab from './envParams/HttpTab.vue';
   import PluginTab from './envParams/PluginTab.vue';
   import PreAndPostTab from './envParams/preAndPost.vue';
+  import SslTab from './envParams/SSLTab.vue';
 
   import { getEnvPlugin, updateOrAddEnv } from '@/api/modules/project-management/envManagement';
   import { useI18n } from '@/hooks/useI18n';
@@ -233,9 +234,10 @@
     loading.value = true;
     store.currentEnvDetailInfo.mock = true;
     await updateOrAddEnv({
-      fileList: [],
+      fileList: store.currentEnvDetailInfo.config.keyStoreConfig.files.map((item: any) => item),
       request: getParameters(isNew),
     });
+
     setIsSave(true);
     loading.value = false;
     Message.success(store.currentEnvDetailInfo.id ? t('common.updateSuccess') : t('common.saveSuccess'));
