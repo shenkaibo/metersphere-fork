@@ -233,6 +233,7 @@ public class ApiDebugService extends MoveNodeService {
         if (apiDebugModule == null) {
             throw new MSException("module.not.exist");
         }
+
     }
 
     public void editPos(ApiEditPosRequest request, String userId) {
