@@ -123,6 +123,9 @@ const useProjectEnvStore = defineStore(
     async function copyCurrentEnv(copyId: string) {
       try {
         const tmpObj = await getDetailEnv(copyId);
+        // 环境复制，不携带SSL 配置
+        tmpObj.config.keyStoreConfig.files = [];
+        tmpObj.config.keyStoreConfig.entry = [];
         currentEnvDetailInfo.value = { ...tmpObj };
         currentEnvDetailInfo.value.id = '';
         let copyName = `copy_${currentEnvDetailInfo.value.name}`;
@@ -130,6 +133,7 @@ const useProjectEnvStore = defineStore(
           copyName = copyName.slice(0, 255);
         }
         currentEnvDetailInfo.value.name = copyName;
+
         setDetailInfo(currentEnvDetailInfo.value);
       } catch (error) {
         console.log(error);
