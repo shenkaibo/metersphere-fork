@@ -1,9 +1,13 @@
 <template>
   <div class="grid grid-cols-4">
     <div class="col-start-1">
-      <a-button v-permission="['PROJECT_ENVIRONMENT:READ+UPDATE']" type="outline" @click="handleAdd">{{
-        t('点击上传')
-      }}</a-button>
+      <a-button
+        v-permission="['PROJECT_ENVIRONMENT:READ+UPDATE']"
+        type="outline"
+        :disabled="uploadIsDisable"
+        @click="handleAdd"
+        >{{ t('点击上传') }}</a-button
+      >
     </div>
   </div>
   <div class="tip">证书文件</div>
@@ -104,7 +108,7 @@
       title: '更新时间',
       dataIndex: 'updateTime',
       showDrag: true,
-      showInTable: true,
+      showInTable: false,
       showTooltip: true,
     },
     {
@@ -183,8 +187,15 @@
   //   heightUsed: 590,
   //   showMode: false,
   // });
+  const uploadIsDisable = computed(() => {
+    if (innerParam.value.length > 0) {
+      return true;
+    }
+    return false;
+  });
 
   const isDisabled = computed(() => !hasAnyPermission(['PROJECT_ENVIRONMENT:READ+UPDATE']));
+
   const handleSingleDelete = (record?: TableData) => {
     if (record) {
       const index = innerParam.value.findIndex((item) => item.id === record.id);
