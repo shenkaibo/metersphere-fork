@@ -104,8 +104,8 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
         String keystoreId = msHTTPElement.getResourceId();
         keystoreId = StringUtils.isNotBlank(config.getReportId()) ? config.getReportId() + "_" + keystoreId : keystoreId;
         LogUtils.info("设置SSL证书配置{}", keystoreId);
-        sampler.setProperty("MS-KEYSTORE-ID", keystoreId);
-        addCertificate(envConfig,httpTree, keystoreId, msHTTPElement);
+        //sampler.setProperty("MS-KEYSTORE-ID", keystoreId);
+        addCertificate(envConfig,httpTree, keystoreId, msHTTPElement,sampler);
 
 
         // 处理请求头
@@ -140,7 +140,7 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
     /**
      * 加载SSL认证
      */
-    private void addCertificate(EnvironmentInfoDTO envConfig, HashTree httpSamplerTree, String resourceId,MsHTTPElement msHTTPElement) {
+    private void addCertificate(EnvironmentInfoDTO envConfig, HashTree httpSamplerTree, String resourceId,MsHTTPElement msHTTPElement,HTTPSamplerProxy sampler) {
         if (envConfig != null &&  envConfig.getConfig().getKeyStoreConfig() != null) {
             KeyStoreConfig sslConfig = envConfig.getConfig().getKeyStoreConfig();
             List<KeyStoreFile> files = sslConfig.getFiles();
@@ -188,6 +188,8 @@ public class MsHTTPElementConverter extends AbstractJmeterElementConverter<MsHTT
                     keystoreConfig.setProperty("MS-KEYSTORE-FILE-PASSWORD", msKeyStore.getPassword());
                     keystoreConfig.setProperty("MS-KEYSTORE-ID", resourceId);
                     httpSamplerTree.add(keystoreConfig);
+                    sampler.setProperty("MS-KEYSTORE-ID", resourceId);
+
                     //config.getKeyStoreMap().put(this.getProjectId(), new MsKeyStore(msKeyStore.getPath(), msKeyStore.getPassword()));
                 }
             }
