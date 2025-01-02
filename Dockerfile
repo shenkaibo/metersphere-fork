@@ -9,6 +9,8 @@ COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
 
+COPY xpack-lib/general-xpack-impl-3.5.0.jar  /app/lib
+
 # 静态文件
 COPY backend/app/src/main/resources/static /app/static
 ADD frontend/public /app/static
