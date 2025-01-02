@@ -234,7 +234,11 @@
     loading.value = true;
     store.currentEnvDetailInfo.mock = true;
     await updateOrAddEnv({
-      fileList: store.currentEnvDetailInfo.config.keyStoreConfig.files.map((item: any) => item),
+      fileList:
+        store.currentEnvDetailInfo.config.keyStoreConfig.files.length > 0 &&
+        store.currentEnvDetailInfo.config.keyStoreConfig.files[0].file instanceof Blob
+          ? store.currentEnvDetailInfo.config.keyStoreConfig.files.map((item: any) => item)
+          : [],
       request: getParameters(isNew),
     });
 
